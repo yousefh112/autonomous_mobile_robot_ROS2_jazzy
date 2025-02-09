@@ -25,6 +25,7 @@ Make sure to let Gazebo know about their location by running:
 Open a new terminal and run:
     
     export GZ_SIM_RESOURCE_PATH=~/gazebo_models
+    cd autonomous_mobile_robot_ROS2_jazzy/car_nav2
     source/install/setup.bash
     ros2 launch car_nav2 navigation_with_slam.launch.py
 
