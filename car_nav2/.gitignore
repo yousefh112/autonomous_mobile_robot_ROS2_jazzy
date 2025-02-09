@@ -1,0 +1,15 @@
+<<<<<<< HEAD
+build/
+install/
+mogi_trajectory_server/
+=======
+# Prerequisites
+/build/
+/install/
+**/.DS_Store
+**/Thumbs.db
+>>>>>>> 25702d814b20ab0248c2591ba6788fb9a5809b58
+log/
+src/build/
+src/install/
+src/log/

@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<robot>
+  <gazebo>
+    <plugin
+        filename="gz-sim-diff-drive-system"
+        name="gz::sim::systems::DiffDrive">
+        <!-- 定义用于接收速度控制指令的主题，机器人将通过该主题接收/cmd_vel类型的速度命令 -->
+        <topic>/cmd_vel</topic>
+
+        <!-- 定义机器人左右轮子的关节名称 -->
+        <left_joint>left_wheel_joint</left_joint>
+        <right_joint>right_wheel_joint</right_joint>
+
+        <!-- 设置车轮的物理参数，包括左右轮之间的距离（单位：米）以及车轮半径（单位：米） -->
+        <wheel_separation>0.3</wheel_separation>
+        <wheel_radius>0.1</wheel_radius>
+
+        <!-- 定义机器人运动控制相关的最大速度和加速度限制 -->
+        <max_velocity>3.0</max_velocity> <!-- 机器人线速度的最大值（单位：米/秒） -->
+        <max_linear_acceleration>1</max_linear_acceleration> <!-- 机器人线加速度的最大值（单位：米/秒²） -->
+        <min_linear_acceleration>-1</min_linear_acceleration> <!-- 机器人线加速度的最小值（单位：米/秒²） -->
+        <max_angular_acceleration>2</max_angular_acceleration> <!-- 机器人角加速度的最大值（单位：弧度/秒²） -->
+        <min_angular_acceleration>-2</min_angular_acceleration> <!-- 机器人角加速度的最小值（单位：弧度/秒²） -->
+        <max_linear_velocity>0.5</max_linear_velocity> <!-- 机器人允许的最大线速度（单位：米/秒） -->
+        <min_linear_velocity>-0.5</min_linear_velocity> <!-- 机器人允许的最小线速度（单位：米/秒） -->
+        <max_angular_velocity>1</max_angular_velocity> <!-- 机器人允许的最大角速度（单位：弧度/秒） -->
+        <min_angular_velocity>-1</min_angular_velocity> <!-- 机器人允许的最小角速度（单位：弧度/秒） -->
+
+        <!-- 定义里程计参数 -->
+        <odom_topic>odom</odom_topic> <!-- 设置里程计数据发布的主题名称 -->
+        <tf_topic>tf</tf_topic> <!-- 设置用于TF变换的主题 -->
+        <frame_id>odom</frame_id> <!-- 设置里程计的参考坐标系 -->
+        <child_frame_id>base_footprint</child_frame_id> <!-- 设置机器人底盘的坐标系 -->
+        <odom_publish_frequency>30</odom_publish_frequency> <!-- 设置里程计数据的发布频率（单位：Hz） -->
+    </plugin>
+
+    <plugin
+        filename="gz-sim-joint-state-publisher-system"
+        name="gz::sim::systems::JointStatePublisher">
+        <!-- 定义关节状态发布的主题名称 -->
+        <topic>joint_states</topic>
+        <!-- 指定需要发布状态的关节名称 -->
+        <joint_name>left_wheel_joint</joint_name>
+        <joint_name>right_wheel_joint</joint_name>
+    </plugin>
+  </gazebo>
+
+  <gazebo reference="imu_link">
+    <sensor name="imu" type="imu">
+      <!-- 始终启用IMU传感器 -->
+      <always_on>1</always_on>
+      <!-- 设置IMU数据的更新频率（单位：Hz） -->
+      <update_rate>10</update_rate>
+      <!-- 启用IMU数据可视化功能 -->
+      <visualize>true</visualize>
+      <!-- 设置IMU数据发布的主题名称 -->
+      <topic>imu</topic>
+      <!-- 启用IMU的性能监控 -->
+      <enable_metrics>true</enable_metrics>
+      <!-- 设置IMU传感器的参考坐标系 -->
+      <gz_frame_id>imu_link</gz_frame_id>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="scan_link">
+    <sensor name="gpu_lidar" type="gpu_lidar">
+      <!-- 设置激光雷达数据的更新频率（单位：Hz） -->
+      <update_rate>5</update_rate>
+      <!-- 设置激光雷达数据发布的主题名称 -->
+      <topic>scan</topic>
+      <!-- 设置激光雷达的参考坐标系 -->
+      <gz_frame_id>scan_link</gz_frame_id>
+      <lidar>
+        <scan>
+          <horizontal>
+            <!-- 设置激光雷达水平扫描的样本数量 -->
+            <samples>720</samples>
+            <!-- 设置激光雷达水平角分辨率 -->
+            <resolution>1</resolution>
+            <!-- 设置激光雷达扫描的最小角度（单位：弧度） -->
+            <min_angle>-3.14156</min_angle>
+            <!-- 设置激光雷达扫描的最大角度（单位：弧度） -->
+            <max_angle>3.14156</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <!-- 设置激光雷达的最小探测距离（单位：米） -->
+          <min>0.05</min>
+          <!-- 设置激光雷达的最大探测距离（单位：米） -->
+          <max>10.0</max>
+          <!-- 设置激光雷达的距离分辨率 -->
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+            <!-- 设置激光雷达噪声的类型 -->
+            <type>gaussian</type>
+            <!-- 设置噪声的均值 -->
+            <mean>0.0</mean>
+            <!-- 设置噪声的标准差 -->
+            <stddev>0.01</stddev>
+        </noise>
+        <!-- 设置激光雷达的参考坐标系 -->
+        <frame_id>scan_link</frame_id>
+      </lidar>
+      <!-- 始终启用激光雷达 -->
+      <always_on>1</always_on>
+      <!-- 启用激光雷达数据的可视化功能 -->
+      <visualize>true</visualize>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="base_link">
+    <sensor name="navsat" type="navsat">
+      <!-- 始终启用GPS传感器 -->
+      <always_on>1</always_on>
+      <!-- 设置GPS数据的更新频率（单位：Hz） -->
+      <update_rate>1</update_rate>
+      <!-- 设置GPS数据发布的主题名称 -->
+      <topic>navsat</topic>
+      <!-- 设置GPS传感器的参考坐标系 -->
+      <gz_frame_id>base_link</gz_frame_id>
+    </sensor>
+  </gazebo>
+</robot>
